@@ -1,7 +1,7 @@
 pipeline {
   agent none
   stages {
-    stages("Build & Analyse avec SonarQube") {
+    stage("Build & Analyse avec SonarQube") {
       agent any
       steps {
         script {
