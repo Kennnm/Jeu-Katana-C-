@@ -24,5 +24,17 @@ pipeline {
         }
       }
     }
+    stage("deploy & OWASP Dependency-Check") {
+      steps {
+          dependencyCheck additionalArguments: '''
+              -o './'
+              -s './'
+              -f 'ALL'
+              --prettyPrint''',
+              odcInstallation: 'owasp-dependency'
+          
+          dependencyCheckPublisher pattern: 'dependency-check-report.html'
+      }
+    }  
   }
 }
