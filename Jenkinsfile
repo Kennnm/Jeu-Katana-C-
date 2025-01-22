@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        sonarQube 'SonarQube Server'
+        sonarQube 'Sonarqube-Scanner'
     }
     stages {
         stage('SonarQube Analysis') {
