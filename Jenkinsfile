@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        sonarQube 'Sonarqube-Scanner'
+        maven 'maven'
     }
     stages {
         stage('SonarQube Analysis') {
