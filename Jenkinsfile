@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        sonarQube 'SonarQube Server'
+    }
     stages {
         stage('SonarQube Analysis') {
             steps {
