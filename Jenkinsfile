@@ -1,48 +1,40 @@
 pipeline {
-    agent any
-
-    tools {
-        maven 'maven'
+  agent any
+  tools {
+    maven 'maven'  // Assurez-vous que 'maven' est bien configuré dans Global Tool Configuration
+  }
+  environment {
+    SONAR_HOST_URL = 'http://host.docker.internal:9000'  // URL de SonarQube
+    SONAR_LOGIN = 'squ_54097c4885369a632457d1654be7cbbbda012cef'  // Token d'authentification
+  }
+  stages {
+    stage('Vérification Maven') {
+      steps {
+        script {
+          // Vérifie si Maven est installé et accessible
+          sh 'mvn -version'
+        }
+      }
     }
-
-    stages {
-        stage("build") {
-            steps {
-                echo 'Building application...'
-            }
+    stage('Build & Analyse avec SonarQube') {
+      steps {
+        script {
+          // Exécute le build Maven et analyse avec SonarQube
+          sh 'mvn clean package sonar:sonar -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN'
         }
-
-        stage("test") {
-            steps {
-                echo 'Running tests...'
-            }
-        }
-
-        stage("SonarQube Analysis") {
-            steps {
-                withSonarQubeEnv('Sonarqube-Scanner') { // Utilise le nom configuré
-                    sh 'mvn clean package sonar:sonar'
-                }
-            }
-        }
-
-        stage("deploy & OWASP Dependency-Check") {
-              steps {
-                  dependencyCheck additionalArguments: '''
-                      -o './'
-                      -s './'
-                      -f 'ALL'
-                      --prettyPrint''',
-                      odcInstallation: 'DP-Check'
-                  
-                  dependencyCheckPublisher pattern: 'dependency-check-report.html'
-              }
-        }  
-
-        stage("deploy") {
-            steps {
-                echo 'Deploying application...'
-            }
-        }
+      }
     }
+    stage("deploy & OWASP Dependency-Check") {
+      steps {
+          dependencyCheck additionalArguments: '''
+              -o './'
+              -s './'
+              -f 'ALL'
+              --prettyPrint''',
+              odcInstallation: 'DP-Check'
+          
+          dependencyCheckPublisher pattern: 'dependency-check-report.html'
+      }
+    }  
+  }
 }
